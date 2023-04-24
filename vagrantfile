@@ -1,0 +1,59 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require "yaml"
+require_relative 'lib/vagrant'
+
+work_dir = File.dirname(File.expand_path(__FILE__))
+settings = vagrant_config(work_dir)
+provider = check_providers(settings['providers'])
+check_plugins(settings['plugins'])
+
+ssh_keys_dir = "#{work_dir}/ssh"
+ssh_keys_destination_dir = "/home/vagrant/.ssh"
+generate_ssh_keys(ssh_keys_dir, 'id_rsa', 'vagrant@master')
+prepare_ssh_config(ssh_keys_dir)
+pub_key = File.read(File.join(ssh_keys_dir, 'id_rsa.pub'))
+nodes_hash = settings['provider'][provider.to_s]['nodes']
+worker_nodes = extract_worker_nodes(nodes_hash)
+
+# https://github.com/vagrant-libvirt/vagrant-libvirt/issues/1445
+ENV['VAGRANT_NO_PARALLEL'] = settings['provider'][provider.to_s]['no_parallel']
+
+Vagrant.configure("2") do |config|
+  config.cache.auto_detect = settings['cache']['auto_detect']
+  config.ssh.insert_key = false
+  config.vm.synced_folder ".", "/vagrant", type: "sshfs"
+
+  nodes_hash.each do |node|   
+    config.vm.define node['name'] do |cfg|
+      cfg.vm.box = node['box']
+      cfg.vm.hostname = node['name']
+      cfg.vm.network node['net'], ip: node['ip']
+      cfg.vm.provider '{provider}' do |pr|
+        pr.name = node['name']
+        pr.cpus = node['cpu']
+        pr.memory = node['mem']
+        pr.qemu_use_session = false if provider == :libvirt
+      end 
+      
+      # Master node
+      if node['name'] == 'master'
+        cfg.vm.provision 'shell' do |s|
+          s.path = 'provisioning/shell/master.sh'
+          s.args = worker_nodes
+        end  
+        cfg.vm.provision 'file', source: ssh_keys_dir, destination: ssh_keys_destination_dir
+      end
+
+      # Worker nodes
+      if node['name'].match(/node/)
+        cfg.vm.provision 'shell' do |s|
+          s.path = 'provisioning/shell/node.sh'
+          s.args = [ pub_key ]
+        end          
+      end
+
+    end
+  end
+end

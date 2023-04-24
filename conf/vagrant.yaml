@@ -1,0 +1,63 @@
+---
+vms: &vms
+  nodes:
+    - name: 'master'
+      cpu: 2
+      mem: 2048
+      box: 'rockylinux/9'
+      net: 'private_network'
+      ip: '10.0.0.10'  
+      provision:
+        - type: 'shell'
+          path: 'provisioning/shell/master.sh' 
+          args: worker_nodes
+        - type: 'file'
+          source: ssh_keys_dir
+          destination: ssh_keys_destination_dir
+    - name: 'node-0'
+      cpu: 2
+      mem: 2048
+      box: 'rockylinux/9'
+      net: 'private_network'
+      ip: '10.0.0.11'  
+      provision:
+        - type: 'shell'
+          path: 'provisioning/shell/key_distribution.sh' 
+          args: [ pub_key ]
+    - name: 'node-1'
+      cpu: 2
+      mem: 2048
+      box: 'rockylinux/9'
+      net: 'private_network'
+      ip: '10.0.0.12'   
+      provision:    
+        - type: 'shell'
+          path: 'provisioning/shell/key_distribution.sh' 
+          args: [ pub_key ]
+
+providers:
+  # virtualbox provider supported out of the box
+  - 'vagrant-libvirt'
+
+plugins:
+  - 'vagrant-hosts'
+  - 'vagrant-cachier'
+  - 'vagrant-sshfs'
+
+cache:
+  auto_detect: true
+
+provider:
+  libvirt:
+    <<: *vms
+    no_parallel: 'yes'
+  virtualbox:
+    <<: *vms
+    no_parallel: 'no'
+
+provisioner:
+  - type: 'hosts'
+    sync_hosts: true
+  - type: 'shell'
+  - type: 'file'
+
