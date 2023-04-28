@@ -1,11 +1,8 @@
 # Portable DevOps Training Lab
 
-The Portable DevOps Training Lab environment (PDTL) is a compact, portable DevOps lab environment which automatically installs a number of virtual machines with HashiCorp Vagrant.
+The Portable DevOps Training Lab (PDTL) is a compact, portable DevOps lab environment which automatically installs a number of virtual machines with HashiCorp Vagrant.
 
-
-envorinment envoroOmgeving is een compacte, portable omgeving welke geautomatiseerd een aantal virtuele machines installeert en configureert voor ontwikkel-, trainings- en demo doeleinden. De omgeving bestaat uit de volgende configuratie:
-
-1. Lab: 3 virtuele machines, bestaande uit 1 master-node en twee worker-nodes.  Elk 2CPU, 2GB RAM, RockyLinux9 als OS.
+1. Lab: 3 virtuele machines, one master-node and two worker-nodes.  Each 2CPU, 2GB RAM, RockyLinux9 operating system.
 
 ## Prerequisites
 
@@ -31,17 +28,25 @@ Vagrant plugins:
 Linux/MacOS: sudo dnf install @virtualization vagrant vagrant-libvirt vagrant-sshfs vagrant-hosts vagrant-cachier
 Windows: vagrant plugin install vagrant-sshfs vagrant-hosts vagrant-cachier
 
+## Getting Started
 
-## Start environment
+Clone this repository to a folder on your host with command:
 
-```bash
+```cmd
+git clone https://github.com/marcelvenema/homelab-vagrant.git
+```
+
+Go to the folder and type:
+
+```cmd
 vagrant up
 ```
+
 Login with username vagrant, password vagrant.
 
 ## Destroy environment
 
-```bash
+```cmd
 vagrant destroy
 ```
 
@@ -52,6 +57,6 @@ vagrant resume -
 
 ## Run ansible provisioning from control-node
 
-```bash
+```cmd
 vagrant ssh master -c  "ansible-playbook /vagrant/provisioning/ansible/playbook.yml"
 ```
