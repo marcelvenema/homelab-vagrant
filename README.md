@@ -1,21 +1,27 @@
-# GrIT Portable DevOps Training Omgeving
-De GrIT Portable DevOps Training Omgeving is een compacte, portable omgeving welke geautomatiseerd een aantal virtuele machines installeert en configureert voor ontwikkel-, trainings- en demo doeleinden. De omgeving bestaat uit de volgende configuratie:
+# Portable DevOps Training Lab
+
+The Portable DevOps Training Lab environment (PDTL) is a compact, portable DevOps lab environment which automatically installs a number of virtual machines with HashiCorp Vagrant.
+
+
+envorinment envoroOmgeving is een compacte, portable omgeving welke geautomatiseerd een aantal virtuele machines installeert en configureert voor ontwikkel-, trainings- en demo doeleinden. De omgeving bestaat uit de volgende configuratie:
 
 1. Lab: 3 virtuele machines, bestaande uit 1 master-node en twee worker-nodes.  Elk 2CPU, 2GB RAM, RockyLinux9 als OS.
 
-# Prerequisites
-Ondersteunde werkstations:
+## Prerequisites
+
+Supported platforms:
+
 - Linux
 - MacOS
 - Windows
 
-Ondersteunde hypervisors:
+Supported hypervisors:
+
 - Oracle VirtualBox
 - libvirt (QEMU/KVM)
 - ...
 
-# Prerequisites
-Alvorens deze omgeving te kunnen gebruiken, dient op het werkstation volgende software geinstalleerd te zijn:
+Before using the environment, please be sure you have installed the following software:
 
 [vagrant](https://vagrantup.com)
 [virtualbox](https://virtualbox.org)
@@ -26,25 +32,25 @@ Linux/MacOS: sudo dnf install @virtualization vagrant vagrant-libvirt vagrant-ss
 Windows: vagrant plugin install vagrant-sshfs vagrant-hosts vagrant-cachier
 
 
-# Start omgeving
+## Start environment
 
 ```bash
 vagrant up
 ```
-Login in met gebruikersnaam vagrant, wachtwoord vagrant.
+Login with username vagrant, password vagrant.
 
-# Verwijder omgeving
+## Destroy environment
 
 ```bash
 vagrant destroy
 ```
 
-# Beheer omgeving
+## Administration
 
-vagrant suspend 
-vagrant resume
+vagrant suspend -
+vagrant resume -
 
-# Run ansible provisioning from control-node
+## Run ansible provisioning from control-node
 
 ```bash
 vagrant ssh master -c  "ansible-playbook /vagrant/provisioning/ansible/playbook.yml"
